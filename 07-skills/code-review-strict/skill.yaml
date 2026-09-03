@@ -1,0 +1,30 @@
+id: code-review-strict
+name: 严格代码审查
+version: 0.1.0
+description: >
+  当用户请求审查代码、检查 PR、或询问某段实现是否存在问题时使用。
+  适用于需要指出具体缺陷而非泛泛评价的场景。
+trigger:
+  keywords: [审查, review, 检查代码, PR, 这段代码有问题吗]
+  file_types: [".py", ".js", ".ts", ".go", ".java"]
+  explicit: true
+instructions: SKILL.md
+constraints:
+  - 只报告能在代码中定位到具体行号的问题
+  - 不修改代码，只输出审查意见
+  - 信息不足以判定时，明确说明缺什么，不猜测根因
+output_format:
+  type: markdown
+  schema:
+    - 问题位置（文件:行号）
+    - 问题类别
+    - 严重级别（阻断 / 重要 / 建议）
+    - 修改建议
+resources: []
+tools: []
+model_hints:
+  prefer_reasoning_tier: true
+  needs_structured_output: false
+meta:
+  author: "Prompt Atlas"
+  license: MIT
