@@ -1,0 +1,43 @@
+# 专家团编排（L3 实体示例）
+# 与 tools/data.js 的 expert-team 配方对应，可由该配方生成后再落到此文件固化。
+id: cross-border-sourcing
+name: 跨境选品决策专家团
+version: 0.1.0
+description: 面向跨境电商选品的多智能体协作；成员职责互斥，按可判定规则路由，带显式交接与人类回流点。
+
+members:
+  - id: pricing-analyst
+    ref: experts/pricing-analyst/expert.yaml
+    role: 定价分析师
+  - id: sourcing-strategist
+    role: 选品策略师
+    # 示例：直接内联，也可 ref 到独立 expert.yaml
+    expertise: [市场需求, 竞争分析, 季节性与趋势]
+  - id: compliance-review
+    role: 合规审查
+    expertise: [类目合规, 目标国法规, 知识产权]
+
+routing:
+  - when: 涉及金额核算 / 毛利 / 定价
+    to: pricing-analyst
+  - when: 涉及市场需求 / 竞品 / 趋势
+    to: sourcing-strategist
+  - when: 涉及类目合规 / 地区法规 / 知识产权
+    to: compliance-review
+
+handoff:
+  signal: 出现合规风险或需要跨维度结论
+  rule: 选品策略师在结论中标注「合规待确认」→ 转交 compliance-review；compliance-review 给出「通过 / 阻断」后回流选品策略师
+
+fallback:
+  member: sourcing-strategist
+  note: 路由无法命中时默认由选品策略师收口并显式说明不确定项
+
+human_in_the_loop:
+  - 单笔预算超过 50 万人民币
+  - 涉及全新类目或新目标国
+  - 任一成员给出「阻断」且业务方计划继续推进
+
+meta:
+  author: "Prompt Atlas"
+  license: MIT
